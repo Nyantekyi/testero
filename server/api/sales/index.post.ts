@@ -6,11 +6,16 @@ export default defineEventHandler(async (event) => {
     
     const sale = await prisma.sale.create({
       data: {
-        customer: body.customer,
-        email: body.email,
+        customerId: body.customerId,
         product: body.product,
         amount: body.amount,
-        status: body.status
+        tax: body.tax || 0,
+        total: body.total || body.amount,
+        status: body.status || 'Pending',
+        notes: body.notes
+      },
+      include: {
+        customer: true
       }
     })
     

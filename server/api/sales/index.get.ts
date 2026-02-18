@@ -3,6 +3,9 @@ import prisma from '../../utils/prisma'
 export default defineEventHandler(async (event) => {
   try {
     const sales = await prisma.sale.findMany({
+      include: {
+        customer: true
+      },
       orderBy: { date: 'desc' }
     })
     return sales

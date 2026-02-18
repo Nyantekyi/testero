@@ -2,18 +2,18 @@ import prisma from '../../utils/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
-    const items = await prisma.inventoryItem.findMany({
+    const suppliers = await prisma.supplier.findMany({
       include: {
-        category: true
+        purchases: true
       },
       orderBy: { createdAt: 'desc' }
     })
-    return items
+    return suppliers
   } catch (error) {
-    console.error('Error fetching inventory items:', error)
+    console.error('Error fetching suppliers:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch inventory items'
+      statusMessage: 'Failed to fetch suppliers'
     })
   }
 })

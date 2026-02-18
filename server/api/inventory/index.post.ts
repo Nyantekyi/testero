@@ -8,10 +8,14 @@ export default defineEventHandler(async (event) => {
       data: {
         name: body.name,
         sku: body.sku,
-        category: body.category,
+        categoryId: body.categoryId,
         quantity: body.quantity,
         minQuantity: body.minQuantity,
-        price: body.price
+        price: body.price,
+        description: body.description
+      },
+      include: {
+        category: true
       }
     })
     
