@@ -58,15 +58,36 @@ A comprehensive Enterprise Resource Planning (ERP) system built with Nuxt.js, fe
 
 The ERP system uses **SQLite** with **Prisma ORM** for data persistence.
 
-### Database Schema
-- **InventoryItem**: Product inventory with SKU, pricing, and stock levels
-- **Sale**: Sales orders with customer information
-- **Purchase**: Purchase orders with supplier management
-- **Employee**: HR employee records
-- **Attendance**: Employee attendance tracking
-- **LeaveRequest**: Leave request management
-- **Transaction**: Accounting transactions (income/expense)
-- **Invoice**: Invoice management
+### Improved Database Schema (v2)
+
+The schema has been significantly improved with normalization, type safety, and performance optimizations:
+
+#### Core Tables
+- **Customer**: Normalized customer data with contact info (replaces embedded customer data in Sales)
+- **Supplier**: Normalized supplier data with contact info (replaces embedded supplier data in Purchases)
+- **Category**: Product categories for better inventory organization
+- **InventoryItem**: Product inventory with foreign key to Category
+- **Sale**: Sales orders with foreign key to Customer, includes tax calculations
+- **Purchase**: Purchase orders with foreign key to Supplier, includes delivery tracking
+- **Employee**: HR employee records with phone numbers
+- **Attendance**: Employee attendance with DateTime for check-in/out (improved from strings)
+- **LeaveRequest**: Leave management with approval workflow tracking
+- **Transaction**: Accounting transactions with reference numbers
+- **Invoice**: Invoice management with payment tracking
+
+#### Type Safety with Enums
+- `SaleStatus`: Pending, Completed, Cancelled, Refunded
+- `PurchaseStatus`: Pending, Approved, Ordered, Received, Cancelled
+- `EmployeeStatus`: Active, OnLeave, Inactive
+- `LeaveType`: SickLeave, Vacation, Personal, Unpaid
+- `LeaveStatus`: Pending, Approved, Rejected
+- `InvoiceStatus`: Draft, Pending, Paid, Overdue, Cancelled
+- `TransactionType`: Income, Expense
+
+#### Performance Features
+- Indexes on frequently queried fields (emails, statuses, dates, SKU)
+- Proper foreign key relationships with cascade deletes
+- Unique constraints on business identifiers
 
 ### Database Commands
 ```bash
@@ -78,6 +99,9 @@ npm run db:seed
 
 # Open Prisma Studio (database GUI)
 npx prisma studio
+
+# View schema
+npx prisma db pull
 ```
 
 ## Getting Started
@@ -176,21 +200,33 @@ The dashboard provides a comprehensive overview of your business with:
 
 ## API Endpoints
 
-The system provides REST API endpoints for all modules:
+The system provides REST API endpoints for all modules with relationship data included:
+
+### Customers (New)
+- `GET /api/customers` - List all customers with their sales history
+- `POST /api/customers` - Create new customer
+
+### Suppliers (New)
+- `GET /api/suppliers` - List all suppliers with their purchase orders
+- `POST /api/suppliers` - Create new supplier
+
+### Categories (New)
+- `GET /api/categories` - List all categories with inventory items
+- `POST /api/categories` - Create new category
 
 ### Inventory
-- `GET /api/inventory` - List all inventory items
+- `GET /api/inventory` - List all inventory items (includes category data)
 - `POST /api/inventory` - Create new inventory item
 - `PUT /api/inventory/[id]` - Update inventory item
 - `DELETE /api/inventory/[id]` - Delete inventory item
 
 ### Sales
-- `GET /api/sales` - List all sales
+- `GET /api/sales` - List all sales (includes customer data)
 - `POST /api/sales` - Create new sale
 - `PUT /api/sales/[id]` - Update sale
 
 ### Purchases
-- `GET /api/purchases` - List all purchase orders
+- `GET /api/purchases` - List all purchase orders (includes supplier data)
 - `POST /api/purchases` - Create new purchase order
 - `PUT /api/purchases/[id]` - Update purchase order
 
@@ -206,6 +242,45 @@ The system provides REST API endpoints for all modules:
 ### Invoices
 - `GET /api/invoices` - List all invoices
 - `POST /api/invoices` - Create new invoice
+
+### API Response Examples
+
+**Get Customers:**
+```json
+{
+  "id": 1,
+  "name": "Acme Corp",
+  "email": "contact@acme.com",
+  "phone": "555-0101",
+  "address": "123 Business St, City, ST 12345",
+  "sales": [
+    {
+      "id": 1,
+      "product": "Premium Widget Pack",
+      "amount": 2450.00,
+      "tax": 196.00,
+      "total": 2646.00,
+      "status": "Completed"
+    }
+  ]
+}
+```
+
+**Get Inventory with Categories:**
+```json
+{
+  "id": 1,
+  "name": "Premium Widget",
+  "sku": "WGT-001",
+  "quantity": 5,
+  "minQuantity": 20,
+  "price": 49.99,
+  "category": {
+    "id": 1,
+    "name": "Electronics"
+  }
+}
+```
 
 ## Contributing
 
