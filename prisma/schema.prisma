@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Inventory Management
+model InventoryItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  sku         String   @unique
+  category    String
+  quantity    Int
+  minQuantity Int
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Sales Management
+model Sale {
+  id        Int      @id @default(autoincrement())
+  customer  String
+  email     String
+  product   String
+  amount    Float
+  status    String   // Pending, Completed, Cancelled, Refunded
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Purchase Management
+model Purchase {
+  id           Int      @id @default(autoincrement())
+  supplier     String
+  email        String
+  items        String   // Description of items
+  amount       Float
+  status       String   // Pending, Approved, Ordered, Received, Cancelled
+  orderDate    DateTime @default(now())
+  expectedDate DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Human Resources - Employees
+model Employee {
+  id             Int            @id @default(autoincrement())
+  name           String
+  email          String         @unique
+  position       String
+  department     String
+  salary         Float
+  hireDate       DateTime
+  status         String         @default("Active") // Active, On Leave, Inactive
+  attendances    Attendance[]
+  leaveRequests  LeaveRequest[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+// HR - Attendance
+model Attendance {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date       DateTime
+  checkIn    String?
+  checkOut   String?
+  status     String   // Present, Absent, On Leave
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([employeeId, date])
+}
+
+// HR - Leave Requests
+model LeaveRequest {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  type       String   // Sick Leave, Vacation, Personal
+  startDate  DateTime
+  endDate    DateTime
+  status     String   @default("Pending") // Pending, Approved, Rejected
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Accounting - Transactions
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  description String
+  type        String   // income, expense
+  category    String
+  amount      Float
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Accounting - Invoices
+model Invoice {
+  id            Int      @id @default(autoincrement())
+  invoiceNumber String   @unique
+  client        String
+  description   String
+  amount        Float
+  dueDate       DateTime
+  status        String   @default("Pending") // Pending, Paid, Overdue
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
