@@ -47,11 +47,38 @@ A comprehensive Enterprise Resource Planning (ERP) system built with Nuxt.js, fe
 
 ## Technology Stack
 
-- **Framework**: Nuxt.js 4.x
+- **Framework**: Nuxt.js 4.3.1
 - **UI Library**: Nuxt UI (Tailwind CSS)
 - **State Management**: Pinia
+- **Database**: SQLite with Prisma ORM
 - **Language**: TypeScript
 - **Icons**: Heroicons
+
+## Database
+
+The ERP system uses **SQLite** with **Prisma ORM** for data persistence.
+
+### Database Schema
+- **InventoryItem**: Product inventory with SKU, pricing, and stock levels
+- **Sale**: Sales orders with customer information
+- **Purchase**: Purchase orders with supplier management
+- **Employee**: HR employee records
+- **Attendance**: Employee attendance tracking
+- **LeaveRequest**: Leave request management
+- **Transaction**: Accounting transactions (income/expense)
+- **Invoice**: Invoice management
+
+### Database Commands
+```bash
+# Run migrations
+npx prisma migrate dev
+
+# Seed database with sample data
+npm run db:seed
+
+# Open Prisma Studio (database GUI)
+npx prisma studio
+```
 
 ## Getting Started
 
@@ -146,6 +173,39 @@ The dashboard provides a comprehensive overview of your business with:
 - Handle leave requests
 - Calculate payroll
 - Organize by departments
+
+## API Endpoints
+
+The system provides REST API endpoints for all modules:
+
+### Inventory
+- `GET /api/inventory` - List all inventory items
+- `POST /api/inventory` - Create new inventory item
+- `PUT /api/inventory/[id]` - Update inventory item
+- `DELETE /api/inventory/[id]` - Delete inventory item
+
+### Sales
+- `GET /api/sales` - List all sales
+- `POST /api/sales` - Create new sale
+- `PUT /api/sales/[id]` - Update sale
+
+### Purchases
+- `GET /api/purchases` - List all purchase orders
+- `POST /api/purchases` - Create new purchase order
+- `PUT /api/purchases/[id]` - Update purchase order
+
+### Employees
+- `GET /api/employees` - List all employees
+- `POST /api/employees` - Create new employee
+- `PUT /api/employees/[id]` - Update employee
+
+### Transactions
+- `GET /api/transactions` - List all accounting transactions
+- `POST /api/transactions` - Create new transaction
+
+### Invoices
+- `GET /api/invoices` - List all invoices
+- `POST /api/invoices` - Create new invoice
 
 ## Contributing
 
